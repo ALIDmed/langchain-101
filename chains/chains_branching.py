@@ -5,7 +5,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 model = HuggingFaceEndpoint(
     repo_id='meta-llama/Meta-Llama-3-8B-Instruct',
-    huggingfacehub_api_token="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"
+    huggingfacehub_api_token="api-key"
 )
 
 
