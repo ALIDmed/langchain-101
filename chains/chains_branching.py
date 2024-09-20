@@ -8,7 +8,7 @@ Docs: https://python.langchain.com/docs/how_to/routing/#using-a-runnablebranch
 """
 model = HuggingFaceEndpoint(
     repo_id='meta-llama/Meta-Llama-3-8B-Instruct',
-    huggingfacehub_api_token="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"
+    huggingfacehub_api_token="api-key"
 )
 
 positive_feedback_template = ChatPromptTemplate.from_messages([
