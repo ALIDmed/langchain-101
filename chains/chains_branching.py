@@ -1,6 +1,6 @@
 from langchain_huggingface import HuggingFaceEndpoint
 from langchain.prompts import ChatPromptTemplate
-from langchain.schema.runnable import RunnableBranch
+from langchain.schema.runnable import RunnableBranch, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 
 """
@@ -31,23 +31,23 @@ escalate_feedback_template = ChatPromptTemplate.from_messages(
 )
 
 classification_template = ChatPromptTemplate.from_messages([
-    ("system" "You are a helpful assistant."),
-    ("human" ,"classify the sentiment of this feedback as positive, negative and neutral: {feedback}"),
+    ("system" "You are a helpful assistant. make sure to return the sentiment as well as the feedback"),
+    ("human" ,"classify the sentiment of this feedback as positive, negative or neutral: {feedback}"),
 ])
 
 
 #  list of (condition, runnable) pairs and a default runnable
 branches = RunnableBranch(
     (
-        lambda x: "positive" in x, 
+        lambda x: "positive" in x.lower(), 
         positive_feedback_template | model | StrOutputParser()
     ),
     (
-        lambda x: "negative" in x, 
+        lambda x: "negative" in x.lower(), 
         negative_feedback_template | model | StrOutputParser()
     ),
     (
-        lambda x: "neutral" in x, 
+        lambda x: "neutral" in x.lower(), 
         neutral_feedback_template | model | StrOutputParser()
     ),
     escalate_feedback_template | model | StrOutputParser()
@@ -56,7 +56,7 @@ branches = RunnableBranch(
 classification_chain = classification_template | model | StrOutputParser()
 chain = classification_chain | branches
 
-review = "I absolutely loved this movie! From start to finish, it kept me hooked with its incredible storytelling and captivating performances."
+review = "I was really disappointed with this movie"
 res = chain.invoke(review)
 
 print(res)
