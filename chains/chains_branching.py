@@ -2,14 +2,15 @@ from langchain_huggingface import HuggingFaceEndpoint
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.runnable import RunnableBranch, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
+from langchain_ollama.llms import OllamaLLM
+from langchain_core.messages import HumanMessage, SystemMessage
 
 """
 Docs: https://python.langchain.com/docs/how_to/routing/#using-a-runnablebranch
 """
-model = HuggingFaceEndpoint(
-    repo_id='meta-llama/Meta-Llama-3-8B-Instruct',
-    huggingfacehub_api_token="api-key"
-)
+
+
+model = OllamaLLM(model="llama3")
 
 positive_feedback_template = ChatPromptTemplate.from_messages([
     ("system" "You are a helpful assistant."),
