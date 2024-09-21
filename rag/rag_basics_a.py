@@ -22,11 +22,21 @@ if not os.path.exists(persistent_directory):
     """
     text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
     docs = text_splitter.split_documents(documents)
-    print(documents)
 
     print("#### Documents Chunks Info ####")
     print(f"the number of document chunks: {len(docs)}")
     print(f"Simple chunk: \n{docs[1].page_content}")
 
+    print('#### generating embeddings ####')
+    embeddings = OllamaEmbeddings(model='llama3.1')
+
+    print('#### creating vectore store ####')
+    db = Chroma.from_documents(
+        documents=docs,
+        embedding=embeddings,
+        persist_directory=persistent_directory
+    )
+    print('#### Vectore store creation finished 🔥')
+
 else:
-    pass
+    print("the vectore store already exists")
