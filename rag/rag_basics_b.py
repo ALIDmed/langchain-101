@@ -18,7 +18,7 @@ retriever = db.as_retriever(
     search_kwargs={'k':3, "score_threshold":0.2}
 )
 
-query = 'When is multicollinearity not a problem?'
+query = '. What is market basket analysis? How would you do it in Python?'
 
 relevant_docs = retriever.invoke(query)
 
