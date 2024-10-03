@@ -23,10 +23,8 @@ if not os.path.exists(file_path):
         f"the file {file_path} doesn't exist"
     )
 
-loader = TextLoader(file_path, encoding='utf-8')
+loader = TextLoader(file_path, autodetect_encoding=True)
 documents = loader.load()
-
-print(documents)
 
 embeddings = OllamaEmbeddings(model="llama3.1")
 
@@ -34,10 +32,17 @@ def create_vectore_store(docs, store_name):
     persistent_dir = os.path.join(db_dir, store_name)
     if not os.path.exists(persistent_dir):
         print(f"Creating vector store {store_name}...")
-        db = Chroma.from_documents(
-            docs,
-            embeddings,
-            persistent_dir,
+
+        ids = [str(uuid.uuid4()) for _ in range(len(docs))]
+        texts = [doc.page_content for doc in docs]
+        metadatas = [doc.metadata for doc in docs]
+
+        db = Chroma.from_texts(
+            texts=texts,
+            metadatas=metadatas,
+            ids=ids,
+            embedding=embeddings,
+            persist_directory=persistent_dir
         )
         print(f"Finished Creating vector store {store_name}...")
     else:
@@ -82,3 +87,31 @@ print("### Using Custom splitting ###")
 class CustomTextSplitter(TextSplitter):
     def split_text(self, text: str):
         return text.split("\n\n") # Example: split by paragraphs
+
+custom_splitter = CustomTextSplitter()
+custom_docs = custom_splitter.split_documents(documents)
+create_vectore_store(custom_docs, "chroma_db_custom")
+
+def query_vectorestore(store_name, query):
+    persistent_dir = os.path.join(db_dir, store_name)
+
+    if os.path.exists(persistent_dir):
+        db = Chroma(
+            persist_directory=persistent_dir,
+            embedding_function=embeddings
+        )
+
+        retriever = db.as_retriever(
+            search_type="similarity_score_threshold",
+            search_kwargs={'k':3, "score_threshold":0.25}
+        )
+
+        relevant_docs = retriever.invoke(query)
+
+        print(f"--- Relevant Documents for {store_name}---")
+        for i, doc in enumerate(relevant_docs):
+            print(f"Document{i}:\n{doc.page_content}\n")
+            if doc.metadata:
+                print(f"Source: {doc.metadata.get('source', 'Unknown')}\n")
+    else:
+        print(f"The vectore store {store_name} does not exist.")
