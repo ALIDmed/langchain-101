@@ -1,5 +1,5 @@
 import os
-from typing import List
+import uuid
 
 from langchain.text_splitter import (
     CharacterTextSplitter,
@@ -23,8 +23,10 @@ if not os.path.exists(file_path):
         f"the file {file_path} doesn't exist"
     )
 
-loader = TextLoader(file_path)
+loader = TextLoader(file_path, encoding='utf-8')
 documents = loader.load()
+
+print(documents)
 
 embeddings = OllamaEmbeddings(model="llama3.1")
 
@@ -35,7 +37,7 @@ def create_vectore_store(docs, store_name):
         db = Chroma.from_documents(
             docs,
             embeddings,
-            persistent_dir
+            persistent_dir,
         )
         print(f"Finished Creating vector store {store_name}...")
     else:
