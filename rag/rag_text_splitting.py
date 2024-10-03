@@ -103,7 +103,7 @@ def query_vectorestore(store_name, query):
 
         retriever = db.as_retriever(
             search_type="similarity_score_threshold",
-            search_kwargs={'k':3, "score_threshold":0.25}
+            search_kwargs={'k':3, "score_threshold":0.3}
         )
 
         relevant_docs = retriever.invoke(query)
@@ -115,3 +115,6 @@ def query_vectorestore(store_name, query):
                 print(f"Source: {doc.metadata.get('source', 'Unknown')}\n")
     else:
         print(f"The vectore store {store_name} does not exist.")
+
+query = "why romeo wanted to hide?"
+query_vectorestore("chroma_db_rec_char", query)
