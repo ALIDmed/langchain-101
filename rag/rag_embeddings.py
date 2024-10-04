@@ -36,13 +36,15 @@ def create_vectore_store(docs, embeddings, store_name):
     else:
         print(f"the vectore store {store_name} already exists.")
 
-embeddings = GoogleGenerativeAIEmbeddings(
+gemini_embeddings = GoogleGenerativeAIEmbeddings(
     model="models/embedding-001", 
-    google_api_key="AIzaSyBq-bSeLMxtIkOyhnTaE_MZXPq6muuJn8s"
+    google_api_key="api-key"
 )
 
-create_vectore_store(docs, embeddings, "chroma_db_gemini")
+create_vectore_store(docs, gemini_embeddings, "chroma_db_gemini")
 
-embeddings = HuggingFaceEmbeddings(
+hf_embeddings = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-mpnet-base-v2"
 )
+
+create_vectore_store(docs, hf_embeddings, "chroma_db_HF")
