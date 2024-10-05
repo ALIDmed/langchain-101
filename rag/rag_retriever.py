@@ -42,5 +42,39 @@ query = "How do you treat heteroscedasticity in regression models?"
     - It finds the most similar documents to the query vector based on cosine similarity.
 """
 print("\n--- Using Similarity Search ---\n")
-query_vector_store("chroma_db_with_metadata", query,
-                   embeddings, "similarity", {"k": 3})
+query_vector_store("chroma_db_with_metadata", 
+                   query,
+                   embeddings, 
+                   search_type="similarity", 
+                   search_kwargs={"k": 3}
+                   )
+
+"""
+2. Similarity Score Threshold
+    - This method retrieves documents that exceed a certain similarity score threshold.
+    - 'score_threshold' sets the minimum similarity score a document must have to be considered relevant.
+    - Use this when you want to ensure that only highly relevant documents are retrieved, filtering out less relevant ones.
+"""
+query_vector_store("chroma_db_with_metadata", 
+                   query,
+                   embeddings, 
+                   search_type="similarity_score_threshold", 
+                   search_kwargs={"k": 3, "score_threshold": 0.2}
+                   )
+
+
+"""
+3. Max Marginal Relevance (MMR)
+    - This method balances between selecting documents that are relevant to the query and diverse among themselves.
+    - 'fetch_k' specifies the number of documents to initially fetch based on similarity.
+    - 'lambda_mult' controls the diversity of the results: 1 for minimum diversity, 0 for maximum.
+    - Use this when you want to avoid redundancy and retrieve diverse yet relevant documents.
+    - Note: Relevance measures how closely documents match the query.
+    - Note: Diversity ensures that the retrieved documents are not too similar to each other, providing a broader range of information.
+"""
+query_vector_store("chroma_db_with_metadata", 
+                   query,
+                   embeddings, 
+                   search_type="mmr", 
+                   search_kwargs={"k": 3, "fetch_k": 20, "lambda_mult": 0.5}
+                   )
