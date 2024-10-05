@@ -1,7 +1,5 @@
 import os
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_community.vectorstores import Chroma
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
