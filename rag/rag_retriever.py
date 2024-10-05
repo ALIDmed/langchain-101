@@ -18,7 +18,7 @@ db = Chroma(
     persist_directory=persistent_dir
 )
 
-def query_vectore_store(store_name, query, embedding, search_type, search_kwargs):
+def query_vector_store(store_name, query, embedding, search_type, search_kwargs):
     if not os.path.exists(persistent_dir):
         retriever = db.as_retriever(
             search_type=search_type,
@@ -33,3 +33,14 @@ def query_vectore_store(store_name, query, embedding, search_type, search_kwargs
         print(f"The vectore store {store_name} does not exist")
 
 query = "How do you treat heteroscedasticity in regression models?"
+
+############# Different retrieval methods ############# 
+
+"""
+1. Similarity Search
+    - This method retrieves documents based on vector similarity.
+    - It finds the most similar documents to the query vector based on cosine similarity.
+"""
+print("\n--- Using Similarity Search ---\n")
+query_vector_store("chroma_db_with_metadata", query,
+                   embeddings, "similarity", {"k": 3})
