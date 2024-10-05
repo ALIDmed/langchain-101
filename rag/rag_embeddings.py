@@ -41,10 +41,26 @@ gemini_embeddings = GoogleGenerativeAIEmbeddings(
     google_api_key="api-key"
 )
 
-create_vectore_store(docs, gemini_embeddings, "chroma_db_gemini")
-
 hf_embeddings = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-mpnet-base-v2"
 )
 
+create_vectore_store(docs, gemini_embeddings, "chroma_db_gemini")
 create_vectore_store(docs, hf_embeddings, "chroma_db_HF")
+
+
+db = Chroma(
+    embedding_function=gemini_embeddings,
+    persist_directory=os.path.join(db_dir, "chroma_db_gemini")
+)
+retriever = db.as_retriever(
+    search_type="similarity_score_threshold",
+    search_kwargs={'k':3, "score_threshold":0.3}
+)
+
+query = "What is the Variation Inflation Factor?"
+relevant_docs = retriever.invoke(query)
+for i, doc in enumerate(relevant_docs):
+    print(f"Document{i}:\n{doc.page_content}\n")
+    if doc.metadata:
+        print(f"Source: {doc.metadata.get('source', 'Unknown')}\n")
