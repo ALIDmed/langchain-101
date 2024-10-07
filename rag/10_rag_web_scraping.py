@@ -1,11 +1,9 @@
 import os
-import uuid
 
-from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.vectorstores import Chroma
-
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 current_dir = os.path.dirname(os.path.abspath(__file__))
 persistent_dir = os.path.join(current_dir, "db", "chroma_db_elding_ring")
 
