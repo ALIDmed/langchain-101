@@ -1,16 +1,14 @@
 import os
 from dotenv import load_dotenv
-from langchain import hub
-from langchain.chains import create_history_aware_retriever, create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.agents import AgentExecutor, create_structured_chat_agent
-from langchain.memory import ConversationBufferMemory
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from langchain.tools import Tool, StructuredTool
-from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_community.vectorstores import Chroma
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from langchain import hub
+from langchain.tools import Tool
+from langchain.agents import AgentExecutor, create_react_agent
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 
 load_dotenv()
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -65,3 +63,38 @@ qa_prompt = ChatPromptTemplate.from_messages(
 
 question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
 rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
+
+# https://smith.langchain.com/hub/hwchase17/react
+prompt = hub.pull("hwchase17/react")
+
+tools = [
+    Tool(
+        name="Answer Question",
+        func=lambda input, **kwargs: rag_chain.invoke(
+            {"input": input, "chat_history": kwargs.get("chat_history", [])}
+        ),
+        description="useful for when you need to answer questions about the context",
+    )
+]
+
+agent = create_react_agent(
+    llm=llm,
+    tools=tools,
+    prompt=prompt,
+)
+agent_executor = AgentExecutor.from_agent_and_tools(
+    agent=agent, tools=tools, handle_parsing_errors=True, verbose=True,
+)
+
+chat_history = []
+while True:
+    query = input("You: ")
+    if query.lower() == "exit":
+        break
+    response = agent_executor.invoke(
+        {"input": query, "chat_history": chat_history})
+    print(f"AI: {response['output']}")
+
+    # Update history
+    chat_history.append(HumanMessage(content=query))
+    chat_history.append(AIMessage(content=response["output"]))
