@@ -4,7 +4,7 @@ from langchain import hub
 from langchain.agents import AgentExecutor, create_structured_chat_agent
 from langchain.memory import ConversationBufferMemory
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from langchain.tools import Tool
+from langchain.tools import Tool, StructuredTool
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 load_dotenv()
@@ -24,9 +24,9 @@ def search_wikipedia(query):
         return f"I couldn't find any information regarding {query}."
     
 tools = [
-    Tool(
+    StructuredTool.from_function(
         name="Time",
-        func=get_current_time,
+        func=get_current_time(),
         description="Useful for when you need to know the current time."
     ),
     Tool(
