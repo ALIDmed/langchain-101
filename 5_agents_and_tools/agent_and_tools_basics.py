@@ -30,11 +30,11 @@ agent = create_react_agent(
     prompt=prompt
 )
 
-agent_executer = AgentExecutor.from_agent_and_tools(
+agent_executor = AgentExecutor.from_agent_and_tools(
     agent=agent,
     tools=tools,
     verbose=True
 )
 
-response = agent_executer.invoke({"input": "what is the current time?"})
+response = agent_executor.invoke({"input": "what is the current time?"})
 print("response", response)
