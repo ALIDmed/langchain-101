@@ -2,12 +2,13 @@ import os
 from dotenv import load_dotenv
 from langchain import hub
 from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain.tools import Tool, StructuredTool, tool
+from langchain.tools import tool
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 @tool
 def greet_user(name: str) -> str:
+    """Greets the user by name."""
     return f"Hello {name}"
 
 class ReverseStringArgs(BaseModel):
@@ -15,6 +16,7 @@ class ReverseStringArgs(BaseModel):
 
 @tool(args_schema=ReverseStringArgs)
 def reverse_string(text: str) -> str:
+    """Reverses the given string."""
     return text[::-1]
 
 class ConcatenateStringsArgs(BaseModel):
