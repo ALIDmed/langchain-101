@@ -33,7 +33,7 @@ contextualize_q_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 """
-what create_history_aware_retriever does is instead of feeding the chat_history and the user query to the retrieval to get the relevant documents which The retriever might not recognize the full meaning or intent behind these vague references. it reformulates this context-dependant question into a clear query it uses an llm to ensure that the question becomes complete and coherent without needing the retriever to "understand" the entire chat history it would turn for example "why would i use t-sne?" into "What are the benefits of using t-SNE for dimensionality reduction?.
+what create_history_aware_retriever does is instead of feeding the chat_history and the user query to the retrieval to get the relevant documents which The retriever might not recognize the full meaning or intent behind these vague references. it reformulates this context-dependant question into a clear query it uses an llm to ensure that the question becomes complete and coherent without needing the retriever to "understand" the entire chat history it would turn for example "why would i use t-sne?" into "What are the benefits of using t-SNE for dimensionality reduction? and it does return the relevant docs.
 Also Passing the entire chat history every time might lead to redundancy or irrelevant portions of the history being included
 If you were to perform retrieval.invoke directly with the entire chat history appended to the query, the retriever would have to process a larger, more complex input every time"
 """

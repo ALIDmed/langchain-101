@@ -18,6 +18,7 @@ if not os.path.exists(persistent_directory):
     loader = PyMuPDFLoader(file_path)
     documents = loader.load()
     """
+    explanation of CharacterTextSplitter:
     CharacterTextSplitter: In a nutshell, it takes the content of a document and splits it by the default separator(\n\n) which is the first level of chunking. If the first level of split creates a chunk greater than the specified chunk size, it does not split it further. However, if the first level of splitting generates smaller size chunk(less than the specified chunk size), it attempts to merge it with another chunk to adhere to the specified chunk size. So, if the first level split generates chunks greater than the chunk size, this logic will be not be of much use. 
     """
     text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
